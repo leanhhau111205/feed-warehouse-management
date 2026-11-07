@@ -1,0 +1,47 @@
+
+services:
+  # PHP + Apache
+  web:
+    build: .
+    container_name: qlk-web
+    restart: unless-stopped
+
+    ports:
+      - "8080:80"
+
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: quan_ly_kho_thuc_an
+      DB_USER: root
+      DB_PASSWORD: Root@123456
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: qlk-db
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: Root@123456
+      MYSQL_DATABASE: quan_ly_kho_thuc_an
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pRoot@123456"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:

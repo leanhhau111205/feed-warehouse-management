@@ -1,13 +1,20 @@
 <?php
 /**
- * Kết nối MySQL/MariaDB (XAMPP mặc định). Một CSDL duy nhất: database/schema.sql.
- * Hàm truy vấn (db_all, db_one, db_exec...) nằm trong includes/helpers.php.
+ * Cấu hình kết nối MySQL
+ * Hỗ trợ cả XAMPP và Docker.
  */
 return [
-    'host'     => '127.0.0.1',
-    'port'     => 3306,
-    'database' => 'quan_ly_kho_thuc_an',
-    'user'     => 'root',
-    'password' => '',
-    'charset'  => 'utf8mb4',
+    'host' => getenv('DB_HOST') ?: '127.0.0.1',
+
+    'port' => (int) (getenv('DB_PORT') ?: 3306),
+
+    'database' => getenv('DB_NAME') ?: 'quan_ly_kho_thuc_an',
+
+    'user' => getenv('DB_USER') ?: 'root',
+
+    'password' => getenv('DB_PASSWORD') !== false
+        ? getenv('DB_PASSWORD')
+        : '',
+
+    'charset' => 'utf8mb4',
 ];
